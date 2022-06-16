@@ -1,5 +1,7 @@
 package domain;
 
+import domain.exceptions.EnrollmentRulesViolationException;
+
 import java.util.Date;
 
 public class CourseOffering {
@@ -23,6 +25,15 @@ public class CourseOffering {
         this.course = course;
         this.section = section;
         this.examDate = examDate;
+    }
+
+    public void checkViolation(CourseOffering o) throws EnrollmentRulesViolationException {
+        if (this == o)
+            return;
+        if (this.getExamTime().equals(o.getExamTime()))
+            throw new EnrollmentRulesViolationException(String.format("Two offerings %s and %s have the same exam time", this, o));
+        if (this.getCourse().equals(o.getCourse()))
+            throw new EnrollmentRulesViolationException(String.format("%s is requested to be taken twice", this.getCourse().getName()));
     }
 
     public Course getCourse() {

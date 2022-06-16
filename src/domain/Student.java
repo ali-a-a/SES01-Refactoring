@@ -1,5 +1,7 @@
 package domain;
 
+import domain.exceptions.EnrollmentRulesViolationException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +43,16 @@ public class Student {
         if (!transcript.containsKey(term))
             transcript.put(term, new HashMap<>());
         transcript.get(term).put(course, grade);
+    }
+
+    public boolean isPassed(Course course) {
+        for (Map.Entry<Term, Map<Course, Double>> tr : transcript.entrySet()) {
+            for (Map.Entry<Course, Double> r : tr.getValue().entrySet()) {
+                if (r.getKey().equals(course) && r.getValue() >= 10)
+                    return true;
+            }
+        }
+        return false;
     }
 
     public List<CourseSection> getCurrentTerm() {
