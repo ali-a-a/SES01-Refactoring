@@ -14,11 +14,11 @@ public class Course {
 		this.id = id;
 		this.name = name;
 		this.units = units;
-		prerequisites = new ArrayList<Course>();
+		prerequisites = new ArrayList<>();
 	}
 	
 	public void addPre(Course c) {
-		getPrerequisites().add(c);
+		prerequisites.add(c);
 	}
 
 	public Course withPre(Course... pres) {
