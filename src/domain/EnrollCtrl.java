@@ -7,15 +7,14 @@ import domain.exceptions.EnrollmentRulesViolationException;
 
 public class EnrollCtrl {
     public void enroll(Student s, List<CourseOffering> courseOfferings) throws EnrollmentRulesViolationException {
-        Map<Term, Map<Course, Double>> transcript = s.getTranscript();
         for (CourseOffering o : courseOfferings) {
             Course offeredCourse = o.getCourse();
-            if(s.isPassed(offeredCourse))
+            if (s.isPassed(offeredCourse))
                 throw new EnrollmentRulesViolationException(String.format("The student has already passed %s", o.getCourse().getName()));
 
             List<Course> prerequisites = offeredCourse.getPrerequisites();
             for (Course pre : prerequisites)
-                if(!s.isPassed(pre))
+                if (!s.isPassed(pre))
                     throw new EnrollmentRulesViolationException(String.format("The student has not passed %s as a prerequisite of %s", pre.getName(), o.getCourse().getName()));
 
             for (CourseOffering o2 : courseOfferings) {
@@ -28,24 +27,19 @@ public class EnrollCtrl {
             }
         }
 
+        double gpa = s.GPA();
         int unitsRequested = CourseOffering.sumOfUnits(courseOfferings);
-
-        double points = 0;
-        int totalUnits = 0;
-        for (Map.Entry<Term, Map<Course, Double>> tr : transcript.entrySet()) {
-            for (Map.Entry<Course, Double> r : tr.getValue().entrySet()) {
-                points += r.getValue() * r.getKey().getUnits();
-                totalUnits += r.getKey().getUnits();
-            }
-        }
-
-        double gpa = points / totalUnits;
-        if ((gpa < 12 && unitsRequested > 14) ||
-                (gpa < 16 && unitsRequested > 16) ||
-                (unitsRequested > 20))
+        if (unitsRequested > maxAllowedUnits(gpa))
             throw new EnrollmentRulesViolationException(String.format("Number of units (%d) requested does not match GPA of %f", unitsRequested, gpa));
 
-        for (CourseOffering o : courseOfferings)
-            s.takeCourse(o.getCourse(), o.getSection());
+        s.takeCourses(courseOfferings);
+    }
+
+    static int maxAllowedUnits(double gpa) {
+        if (gpa < 12)
+            return 14;
+        if (gpa < 16)
+            return 16;
+        return 20;
     }
 }

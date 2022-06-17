@@ -31,10 +31,6 @@ public class Student {
         this.currentTerm = new ArrayList<>();
     }
 
-    public void takeCourse(Course c, int section) {
-        currentTerm.add(new CourseSection(c, section));
-    }
-
     public Map<Term, Map<Course, Double>> getTranscript() {
         return transcript;
     }
@@ -69,5 +65,27 @@ public class Student {
 
     public String toString() {
         return name;
+    }
+
+    public double GPA() {
+        double points = 0;
+        int totalUnits = 0;
+        for (Map.Entry<Term, Map<Course, Double>> tr : transcript.entrySet()) {
+            for (Map.Entry<Course, Double> r : tr.getValue().entrySet()) {
+                points += r.getValue() * r.getKey().getUnits();
+                totalUnits += r.getKey().getUnits();
+            }
+        }
+
+        return points / totalUnits;
+    }
+
+    public void takeCourse(Course c, int section) {
+        currentTerm.add(new CourseSection(c, section));
+    }
+
+    public void takeCourses(List<CourseOffering> courseOfferings) {
+        for (CourseOffering o : courseOfferings)
+            takeCourse(o.getCourse(), o.getSection());
     }
 }
