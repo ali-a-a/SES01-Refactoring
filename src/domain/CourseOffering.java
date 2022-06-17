@@ -3,6 +3,7 @@ package domain;
 import domain.exceptions.EnrollmentRulesViolationException;
 
 import java.util.Date;
+import java.util.List;
 
 public class CourseOffering {
     private Course course;
@@ -49,5 +50,12 @@ public class CourseOffering {
 
     public int getSection() {
         return section;
+    }
+
+    static int sumOfUnits(List<CourseOffering> courseOfferings) {
+        int units = 0;
+        for (CourseOffering o : courseOfferings)
+            units += o.getCourse().getUnits();
+        return units;
     }
 }
