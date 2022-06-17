@@ -10,23 +10,24 @@ public class EnrollCtrl {
         Map<Term, Map<Course, Double>> transcript = s.getTranscript();
         for (CourseOffering o : courseOfferings) {
             Course offeredCourse = o.getCourse();
-
-            if(s.isPassed(offeredCourse)) {
+            if(s.isPassed(offeredCourse))
                 throw new EnrollmentRulesViolationException(String.format("The student has already passed %s", o.getCourse().getName()));
-            }
 
             List<Course> prerequisites = offeredCourse.getPrerequisites();
-
-            for (Course pre : prerequisites) {
-                if(!s.isPassed(pre)) {
+            for (Course pre : prerequisites)
+                if(!s.isPassed(pre))
                     throw new EnrollmentRulesViolationException(String.format("The student has not passed %s as a prerequisite of %s", pre.getName(), o.getCourse().getName()));
-                }
-            }
 
             for (CourseOffering o2 : courseOfferings) {
-                o.checkViolation(o2);
+                if (o == o2)
+                    continue;
+                if (o.hasOverlapWith(o2))
+                    throw new EnrollmentRulesViolationException(String.format("Two offerings %s and %s have the same exam time", o, o2));
+                if (o.hasSameCourseWith(o2))
+                    throw new EnrollmentRulesViolationException(String.format("%s is requested to be taken twice", o.getCourse().getName()));
             }
         }
+
         int unitsRequested = 0;
         for (CourseOffering o : courseOfferings)
             unitsRequested += o.getCourse().getUnits();

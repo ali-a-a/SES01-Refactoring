@@ -27,13 +27,12 @@ public class CourseOffering {
         this.examDate = examDate;
     }
 
-    public void checkViolation(CourseOffering o) throws EnrollmentRulesViolationException {
-        if (this == o)
-            return;
-        if (this.getExamTime().equals(o.getExamTime()))
-            throw new EnrollmentRulesViolationException(String.format("Two offerings %s and %s have the same exam time", this, o));
-        if (this.getCourse().equals(o.getCourse()))
-            throw new EnrollmentRulesViolationException(String.format("%s is requested to be taken twice", this.getCourse().getName()));
+    public boolean hasOverlapWith(CourseOffering o) {
+        return this.getExamTime().equals(o.getExamTime());
+    }
+
+    public boolean hasSameCourseWith(CourseOffering o) {
+        return this.getCourse().equals(o.getCourse());
     }
 
     public Course getCourse() {
